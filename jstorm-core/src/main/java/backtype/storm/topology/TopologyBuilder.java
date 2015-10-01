@@ -95,23 +95,25 @@ public class TopologyBuilder {
 
 //    private Map<String, Map<GlobalStreamId, Grouping>> _inputs = new HashMap<String, Map<GlobalStreamId, Grouping>>();
 
-    private Map<String, StateSpoutSpec> _stateSpouts = new HashMap<String, StateSpoutSpec>();
+    private Map<String, StateSpoutSpec> _stateSpouts = new HashMap<String, StateSpoutSpec>();//没什么卵用
     
     
     public StormTopology createTopology() {
         Map<String, Bolt> boltSpecs = new HashMap<String, Bolt>();
         Map<String, SpoutSpec> spoutSpecs = new HashMap<String, SpoutSpec>();
+        
         for(String boltId: _bolts.keySet()) {
             IRichBolt bolt = _bolts.get(boltId);
             ComponentCommon common = getComponentCommon(boltId, bolt);
             boltSpecs.put(boltId, new Bolt(ComponentObject.serialized_java(Utils.javaSerialize(bolt)), common));
         }
+        
         for(String spoutId: _spouts.keySet()) {
             IRichSpout spout = _spouts.get(spoutId);
             ComponentCommon common = getComponentCommon(spoutId, spout);
             spoutSpecs.put(spoutId, new SpoutSpec(ComponentObject.serialized_java(Utils.javaSerialize(spout)), common));
-            
         }
+        //StormTopology代码待看！！！
         return new StormTopology(spoutSpecs,
                                  boltSpecs,
                                  new HashMap<String, StateSpoutSpec>());
@@ -137,7 +139,7 @@ public class TopologyBuilder {
      * @return use the returned object to declare the inputs to this component
      */
     public BoltDeclarer setBolt(String id, IRichBolt bolt, Number parallelism_hint) {
-        validateUnusedId(id);
+        validateUnusedId(id);//判断id是否重复
         initCommon(id, bolt, parallelism_hint);
         _bolts.put(id, bolt);
         return new BoltGetter(id);
